@@ -145,13 +145,11 @@ http://localhost:5000
 Add screenshots of your project here.
 
 ### Login Page
-![Login Screenshot](screenshots/login.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0305d42e-8123-4d68-8e01-14d3cac23723" />
+
 
 ### Dashboard
-![Dashboard Screenshot](screenshots/dashboard.png)
-
-### Completed Tasks
-![Completed Tasks Screenshot](screenshots/completed.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8e7e50e7-7578-471c-85c5-a32399978659" />
 
 ---
 
@@ -200,10 +198,8 @@ git push origin feature-name
 
 5. Open a Pull Request.
 
-   Website Images :
-   Login Page: <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0305d42e-8123-4d68-8e01-14d3cac23723" />
 
-   signUp page : <img width="940" height="946" alt="Screenshot 2026-06-28 171939" src="https://github.com/user-attachments/assets/81bac22e-a562-4a87-bdb0-792185ab2173" />
+
 
 
 
