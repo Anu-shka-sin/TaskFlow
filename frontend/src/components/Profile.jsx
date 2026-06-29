@@ -5,7 +5,7 @@ import axios from 'axios'
 import { ChevronLeft, UserCircle, Lock, Save, Eye, EyeOff, Mail, User, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-const API_URL = 'http://localhost:4000'
+const API_URL = import.meta.env.VITE_API_URL
 
 // ── Tailwind class constants ────────────────────────────────────────────────
 const BACK_BUTTON =
