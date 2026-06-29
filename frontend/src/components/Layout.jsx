@@ -19,8 +19,7 @@ const Layout = ({ onLogout, user }) => {
 
       if (!token) throw new Error("No auth token found");
 
-      const { data } = await axios.get(
-        "http://localhost:4000/api/tasks/gp",
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/tasks`),
         {
           headers: {
             Authorization: `Bearer ${token}`,
