@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-const API_URL = 'http://localhost:4000'
+const API_URL = import.meta.env.VITE_API_URL;
 
 // ── Tailwind constants ──────────────────────────────────────────────────────
 const CARD        = 'bg-white rounded-2xl shadow-sm border border-gray-100 p-6'
