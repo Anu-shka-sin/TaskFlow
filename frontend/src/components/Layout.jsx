@@ -19,13 +19,14 @@ const Layout = ({ onLogout, user }) => {
 
       if (!token) throw new Error("No auth token found");
 
-      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/tasks`),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+     const { data } = await axios.get(
+  `${import.meta.env.VITE_API_URL}/api/tasks`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
       const arr = Array.isArray(data)
         ? data
