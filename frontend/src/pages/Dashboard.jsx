@@ -103,9 +103,9 @@ const TaskRow = ({ task, onToggle, onDelete, onEdit }) => (
     </div>
   </div>
 )
-// ── Dashboard ────────────────────────────────────────────────────────────────
-const Dashboard = ({ handleLogout }) => {
-  const TaskModal = ({ task, onClose, onSave }) => {
+
+// ── Task modal (moved OUTSIDE Dashboard — this was the bug) ────────────────
+const TaskModal = ({ task, onClose, onSave }) => {
   const [saving, setSaving] = useState(false)
 
   const [form, setForm] = useState({
@@ -215,3 +215,223 @@ const Dashboard = ({ handleLogout }) => {
   )
 }
 
+// ── Dashboard ────────────────────────────────────────────────────────────────
+const Dashboard = ({ handleLogout }) => {
+  const navigate = useNavigate()
+
+  const [tasks, setTasks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState('all') // 'all' | 'pending' | 'completed'
+  const [showModal, setShowModal] = useState(false)
+  const [editingTask, setEditingTask] = useState(null)
+
+  const token = localStorage.getItem('token')
+
+  const authHeaders = {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+
+  // ── Fetch tasks ─────────────────────────────────────────────────────────
+  const fetchTasks = async () => {
+    setLoading(true)
+    try {
+      const res = await axios.get(`${API_URL}/api/tasks`, authHeaders)
+      setTasks(res.data)
+    } catch (err) {
+      toast.error('Failed to load tasks')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchTasks()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ── Create / update task ────────────────────────────────────────────────
+  const handleSaveTask = async (form) => {
+    try {
+      if (editingTask) {
+        const res = await axios.put(
+          `${API_URL}/api/tasks/${editingTask._id}`,
+          form,
+          authHeaders
+        )
+        setTasks((prev) =>
+          prev.map((t) => (t._id === editingTask._id ? res.data : t))
+        )
+        toast.success('Task updated')
+      } else {
+        const res = await axios.post(
+          `${API_URL}/api/tasks`,
+          form,
+          authHeaders
+        )
+        setTasks((prev) => [res.data, ...prev])
+        toast.success('Task added')
+      }
+      setShowModal(false)
+      setEditingTask(null)
+    } catch (err) {
+      toast.error('Failed to save task')
+      console.error(err)
+    }
+  }
+
+  // ── Toggle status ───────────────────────────────────────────────────────
+  const handleToggle = async (task) => {
+    const newStatus = task.status === 'completed' ? 'pending' : 'completed'
+    try {
+      const res = await axios.put(
+        `${API_URL}/api/tasks/${task._id}`,
+        { ...task, status: newStatus },
+        authHeaders
+      )
+      setTasks((prev) =>
+        prev.map((t) => (t._id === task._id ? res.data : t))
+      )
+    } catch (err) {
+      toast.error('Failed to update task')
+      console.error(err)
+    }
+  }
+
+  // ── Delete ──────────────────────────────────────────────────────────────
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/api/tasks/${id}`, authHeaders)
+      setTasks((prev) => prev.filter((t) => t._id !== id))
+      toast.success('Task deleted')
+    } catch (err) {
+      toast.error('Failed to delete task')
+      console.error(err)
+    }
+  }
+
+  const handleEdit = (task) => {
+    setEditingTask(task)
+    setShowModal(true)
+  }
+
+  const handleAddNew = () => {
+    setEditingTask(null)
+    setShowModal(true)
+  }
+
+  // ── Derived stats ───────────────────────────────────────────────────────
+  const totalCount = tasks.length
+  const pendingCount = tasks.filter((t) => t.status === 'pending').length
+  const completedCount = tasks.filter((t) => t.status === 'completed').length
+
+  const filteredTasks = tasks.filter((t) => {
+    if (filter === 'pending') return t.status === 'pending'
+    if (filter === 'completed') return t.status === 'completed'
+    return true
+  })
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <ToastContainer position="top-right" autoClose={2500} />
+
+      {/* Header */}
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 flex items-center justify-center">
+              <ListTodo className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-gray-800">TaskFlow</h1>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-500 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 py-6">
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <StatCard
+            icon={ListTodo}
+            label="Total Tasks"
+            value={totalCount}
+            color="bg-purple-500"
+            onClick={() => setFilter('all')}
+          />
+          <StatCard
+            icon={Clock}
+            label="Pending"
+            value={pendingCount}
+            color="bg-yellow-500"
+            onClick={() => setFilter('pending')}
+          />
+          <StatCard
+            icon={CheckCircle2}
+            label="Completed"
+            value={completedCount}
+            color="bg-green-500"
+            onClick={() => setFilter('completed')}
+          />
+        </div>
+
+        {/* Task list card */}
+        <div className={CARD}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-semibold text-gray-800">
+              {filter === 'all'
+                ? 'All Tasks'
+                : filter === 'pending'
+                ? 'Pending Tasks'
+                : 'Completed Tasks'}
+            </h2>
+            <button
+              onClick={handleAddNew}
+              className="flex items-center gap-1.5 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              New Task
+            </button>
+          </div>
+
+          {loading ? (
+            <p className="text-sm text-gray-400 py-6 text-center">Loading tasks…</p>
+          ) : filteredTasks.length === 0 ? (
+            <p className="text-sm text-gray-400 py-6 text-center">No tasks found.</p>
+          ) : (
+            <div>
+              {filteredTasks.map((task) => (
+                <TaskRow
+                  key={task._id}
+                  task={task}
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                  onEdit={handleEdit}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      {showModal && (
+        <TaskModal
+          task={editingTask}
+          onClose={() => {
+            setShowModal(false)
+            setEditingTask(null)
+          }}
+          onSave={handleSaveTask}
+        />
+      )}
+    </div>
+  )
+}
+
+export default Dashboard
