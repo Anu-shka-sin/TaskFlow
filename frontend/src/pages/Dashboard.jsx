@@ -235,7 +235,7 @@ const Dashboard = ({ handleLogout }) => {
   const fetchTasks = async () => {
     setLoading(true)
     try {
-      const res = await axios.get(`${API_URL}/api/tasks`, authHeaders)
+      const res = await axios.get(`${API_URL}/api/tasks/gp`, authHeaders)
       setTasks(res.data)
     } catch (err) {
       toast.error('Failed to load tasks')
@@ -255,7 +255,7 @@ const Dashboard = ({ handleLogout }) => {
     try {
       if (editingTask) {
         const res = await axios.put(
-          `${API_URL}/api/tasks/${editingTask._id}`,
+          `${API_URL}/api/tasks/${editingTask._id}/gp`,
           form,
           authHeaders
         )
@@ -265,7 +265,7 @@ const Dashboard = ({ handleLogout }) => {
         toast.success('Task updated')
       } else {
         const res = await axios.post(
-          `${API_URL}/api/tasks`,
+          `${API_URL}/api/tasks/gp`,
           form,
           authHeaders
         )
@@ -285,7 +285,7 @@ const Dashboard = ({ handleLogout }) => {
     const newStatus = task.status === 'completed' ? 'pending' : 'completed'
     try {
       const res = await axios.put(
-        `${API_URL}/api/tasks/${task._id}`,
+        `${API_URL}/api/tasks/${task._id}/gp`,
         { ...task, status: newStatus },
         authHeaders
       )
@@ -301,7 +301,7 @@ const Dashboard = ({ handleLogout }) => {
   // ── Delete ──────────────────────────────────────────────────────────────
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_URL}/api/tasks/${id}`, authHeaders)
+      await axios.delete(`${API_URL}/api/tasks/${id}/gp`, authHeaders)
       setTasks((prev) => prev.filter((t) => t._id !== id))
       toast.success('Task deleted')
     } catch (err) {
