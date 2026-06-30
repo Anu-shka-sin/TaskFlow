@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
-import TaskModal from './TaskModal'
 
 import {
   CheckCircle2, Clock, ListTodo, Plus, LogOut, User,
@@ -105,22 +104,6 @@ const TaskRow = ({ task, onToggle, onDelete, onEdit }) => (
   </div>
 )
 
-// ── Add / Edit Modal ─────────────────────────────────────────────────────────
-const TaskModal = ({ task, onClose, onSave }) => {
-  const [form, setForm] = useState(
-    task
-      ? { title: task.title, description: task.description || '', priority: task.priority || 'medium', dueDate: task.dueDate ? task.dueDate.slice(0, 10) : '' }
-      : { title: '', description: '', priority: 'medium', dueDate: '' }
-  )
-  const [saving, setSaving] = useState(false)
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!form.title.trim()) { toast.error('Title is required.'); return }
-    setSaving(true)
-    await onSave(form)
-    setSaving(false)
-  }
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
