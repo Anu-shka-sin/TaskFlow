@@ -152,7 +152,8 @@ Add screenshots of your project here.
 
 
 ### Dashboard
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8e7e50e7-7578-471c-85c5-a32399978659" />
+<img width="1920" height="962" alt="Screenshot (108)" src="https://github.com/user-attachments/assets/7ff5c4fe-a154-41ce-b955-983214b9795e" />
+
 
 ---
 
