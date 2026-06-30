@@ -103,7 +103,117 @@ const TaskRow = ({ task, onToggle, onDelete, onEdit }) => (
     </div>
   </div>
 )
+// ── Dashboard ────────────────────────────────────────────────────────────────
+const Dashboard = ({ handleLogout }) => {
+  const TaskModal = ({ task, onClose, onSave }) => {
+  const [saving, setSaving] = useState(false)
 
+  const [form, setForm] = useState({
+    title: task?.title || '',
+    description: task?.description || '',
+    priority: task?.priority || 'medium',
+    dueDate: task?.dueDate
+      ? new Date(task.dueDate).toISOString().split('T')[0]
+      : '',
+  })
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setSaving(true)
+
+    try {
+      await onSave(form)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <h2 className="text-xl font-bold text-gray-800 mb-5">
+          {task ? 'Edit Task' : 'New Task'}
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className={INPUTWRAPPER}>
+            <ListTodo className="text-purple-400 w-5 h-5 mr-2 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Task title"
+              value={form.title}
+              onChange={(e) =>
+                setForm({ ...form, title: e.target.value })
+              }
+              className="w-full focus:outline-none text-sm text-gray-700 bg-transparent"
+              required
+              autoFocus
+            />
+          </div>
+
+          <textarea
+            placeholder="Description (optional)"
+            value={form.description}
+            onChange={(e) =>
+              setForm({ ...form, description: e.target.value })
+            }
+            rows={3}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 resize-none transition-all"
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">
+                Priority
+              </label>
+              <select
+                value={form.priority}
+                onChange={(e) =>
+                  setForm({ ...form, priority: e.target.value })
+                }
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all bg-white"
+              >
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">
+                Due Date
+              </label>
+              <input
+                type="date"
+                value={form.dueDate}
+                onChange={(e) =>
+                  setForm({ ...form, dueDate: e.target.value })
+                }
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className={FULL_BUTTON}
+            disabled={saving}
+          >
+            <Save className="w-4 h-4" />
+            {saving ? 'Saving…' : task ? 'Save Changes' : 'Add Task'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
