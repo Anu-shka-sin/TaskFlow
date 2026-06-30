@@ -5,8 +5,7 @@ TaskFlow is a full-stack task management application that helps users organize, 
 Backend Deployment
 Available at your primary URL https://taskflow-o1wf.onrender.com
 
-Frontend Depoyment 
-Live preview of the website :[https://task-flow-kohs.vercel.app/login](https://task-flow-kohs.vercel.app/login)
+
 
 ---
 
